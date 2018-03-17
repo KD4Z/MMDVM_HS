@@ -24,7 +24,7 @@
 
 #define VER_MAJOR       "1"
 #define VER_MINOR       "3"
-#define VER_REV         "3"
+#define VER_REV         "3z"
 #define VERSION_DATE    "20180224"
 
 #if defined(ZUMSPOT_ADF7021)
