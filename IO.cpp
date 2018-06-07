@@ -25,7 +25,7 @@
 uint32_t    m_frequency_rx;
 uint32_t    m_frequency_tx;
 uint8_t     m_power;
-
+uint8_t     m_ledCountDivider = 0U;
 CIO::CIO():
 m_started(false),
 m_rxBuffer(RX_RINGBUFFER_SIZE),
@@ -89,7 +89,7 @@ void CIO::selfTest()
 
       blinks++;
 
-      if(blinks > 5U)
+      if(blinks > 3U)
         break;
     }
   }
@@ -114,15 +114,23 @@ void CIO::process()
       m_watchdog = 0U;
     }
 
-#if defined(CONSTANT_SRV_LED)
-    LED_pin(HIGH);
-#else
     if (m_ledCount >= 24000U) {
       m_ledCount = 0U;
-      m_ledValue = !m_ledValue;
-      LED_pin(m_ledValue);
+      m_ledCountDivider++;
     }
-#endif
+	#if defined(CONSTANT_SRV_LED)
+		LED_pin(HIGH);
+		m_ledCount = 0U;
+	#else
+    if(m_ledCountDivider > 10) {
+       m_ledValue = !m_ledValue;
+       LED_pin(m_ledValue);
+       m_ledCountDivider = 0;
+    }
+	#endif
+    if (m_ledCount > 3000U && m_ledValue == 0 ) {
+      LED_pin(1); // off after being on only briefly
+    }
   } else {
     if (m_ledCount >= 240000U) {
       m_ledCount = 0U;
